@@ -13,18 +13,19 @@ class TableAccessController {
   Table *m_t;
 
  public:
-  TableAccessController(Table *t) {
-    m_t = t;
+  TableAccessController(Table *t) : m_t(t) {}
+
+  ~TableAccessController() { m_t->release(); }
+
+  bool acquire() {
     int counter = 0;
-    while (!t->is_free()) {
+    while (!m_t->is_free()) {
       if (counter++ > 100) {
         throw "Too long wait for table";
       }
     }
-    t->acquire();
+    return m_t->acquire();
   }
-
-  ~TableAccessController() { m_t->release(); }
 };
 };  // namespace
 
